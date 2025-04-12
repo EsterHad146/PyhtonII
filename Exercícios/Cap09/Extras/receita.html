@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+	<head>
+		<meta charset="utf-8">
+			<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+			<link href="https://fonts.googleapis.com/css2?family=Kreon:wght@300;700&display=swap" rel="stylesheet">
+
+			<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+
+
+			<title>Receita Generetor</title>
+
+			<style type="text/css">
+				html, body {
+					height: 100%;
+					color: #5b0702;
+
+					font-family: 'Kreon', serif;
+
+				}
+
+				p {
+					font-weight: 300;
+					font-size: 1.5em;
+				}
+
+				h1,h2,h3 {
+					font-weight: 700;
+				}
+
+				h1 {
+					font-size: 3em;	
+
+
+				}
+
+				.box {
+					text-align: center;
+					border-top: 20px double #af1c13;
+					height: 100%;
+				}
+
+				.btn-wine {
+					background-color: #af1c13;
+					color: #5b0702;
+					border: 5px double #af1c13;
+					font-size: 1.8em;
+					text-transform: uppercase;
+					font-weight: 700;
+
+				}
+
+				.btn-wine:hover {
+					color:#750b05;
+					border: 5px double #750b05;
+				}
+			</style>
+
+			<script>
+
+				function randomizarNumero() {
+				  min = Math.ceil(0);
+				  max = Math.floor(100);
+				  return Math.floor(Math.random() * (max - min + 1)) + min;
+				}
+
+				function gerarReceita() {
+
+					let xmlHTTP = new XMLHttpRequest();
+
+					xmlHTTP.open('GET', 'https://raw.githubusercontent.com/adrianosferreira/afrodite.json/master/afrodite.json');
+
+					xmlHTTP.onreadystatechange = () => {
+						if (xmlHTTP.readyState == 4 && xmlHTTP.status == 200) {
+
+							let dados = JSON.parse(xmlHTTP.responseText);
+
+							let numRandomico = randomizarNumero();
+							console.log(numRandomico);
+
+							let divReceita = document.getElementById('receita');
+
+							divReceita.innerHTML = '';
+
+							let div = document.createElement('div');
+							let titulo = document.createElement('h1');
+							let ingredientes = document.createElement('h2');
+							let modoPreparo = document.createElement('h2');
+							let p1 = document.createElement('p');
+							let p2 = document.createElement('p');
+
+							titulo.innerHTML = dados[numRandomico].nome;
+							ingredientes.innerHTML = 'Ingredientes';
+							modoPreparo.innerHTML = 'Modo de Preparo';
+							
+
+							let conteudoIngredientes = ''
+							for(i in dados[numRandomico].secao[0].conteudo) {
+								if (conteudoIngredientes) {
+									conteudoIngredientes += '<br>'
+								}
+								conteudoIngredientes += dados[numRandomico].secao[0].conteudo[i];
+							}
+
+							p1.innerHTML = conteudoIngredientes;
+
+							let conteudoModoPreparo = ''
+							for(i in dados[numRandomico].secao[1].conteudo) {
+								if (conteudoModoPreparo) {
+									conteudoModoPreparo += '<br>'
+								}
+								conteudoModoPreparo += dados[numRandomico].secao[1].conteudo[i];
+							}
+
+							p2.innerHTML = conteudoModoPreparo;
+							
+							divReceita.appendChild(titulo);
+							divReceita.appendChild(ingredientes);
+							divReceita.appendChild(p1);
+							divReceita.appendChild(modoPreparo);
+							divReceita.appendChild(p2);
+							console.log(dados);
+
+						}
+					}
+
+					xmlHTTP.send();
+				}
+
+			</script>
+	</head>
+
+	<body>
+
+		<nav class="navbar">
+			<div class="container navbrand">
+				<i class="fas fa-utensils fa-3x"></i>
+				<h1 class="mr-auto ml-3 pt-2">Receita Generator</h1>
+			</div>
+		</nav>
+
+		<div class="container">
+			<div class="row">
+				<div class="col-sm pl-5 pr-5 box pt-5">
+					
+					<button type="button" onclick="gerarReceita()" class="btn mb-3 btn-wine btn-custom">Randomizar Receita</button>
+
+					<div id="receita">
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+	</body>
+</html>

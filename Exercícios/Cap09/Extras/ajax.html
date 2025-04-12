@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div id="link">
+        <form action="#">
+            <select name="cidades" id="cidades" onchange="mudarCidade(this.value)">
+                <option value="0">Escolha uma cidade</option>
+                <option value="Catanduva,br">Catanduva SP</option>
+                <option value="Sao+Carlos,br">São Carlos SP</option>
+                <option value="Ribeirao+Preto,br">Ribeirão Preto SP</option>
+                <option value="Sao+Paulo,br">São Paulo SP</option>
+                <option value="Porto+Alegre,br">Porto Alegre RS</option>
+                <option value="New+York,us">Nova Youk NY</option>
+                <option value="London,gb">Londres GB</option>
+            </select>
+        </form>
+    </div>
+    <div id="exibir"></div>
+    <script>
+        var divExibir = document.getElementById('exibir')
+        var nav = window.navigator;
+        var lat, lon;
+        var geoLoc = nav.geolocation;
+
+        if (geoLoc !=null){
+            geoLoc.getCurrentPosition(obterPosicao, obterErro)
+        }
+        
+        function obterPosicao(posicao){
+            lat = posicao.coords.latitude;
+            lon = posicao.coords.longitude;
+            console.log('Lat'+lon +', Lat' + lat)
+            lon = 'lon='+lon
+            lat = '&lat='+lat
+            mudarCidade(lat, lon)
+        }
+        function obterErro(err){
+            console.log(err)
+        }
+        
+        function mudarCidade(valor, chave='q='){
+            var ajax=null;
+            if (window.XMLHttpRequest){
+                ajax = new XMLHttpRequest()
+            } else if (window.ActiveXObject){ //Para adaptar para navegadores antigos
+                ajax = new ActiveXObject('Msxml2.XMLHTTP')
+            }
+            //Ex.:q=são+paulo,br (Cidade, sigla do país)
+            ajax.open("GET", `https://api.openweathermap.org/data/2.5/weather?appid=9e2aa2e6c8bf8537aa1e1414432a4007&${chave}${valor}&units=metric&lang=pt_br`, true);
+            ajax.send(null);
+            ajax.onreadystatechange = function(){
+                if (ajax.readyState==4){
+                    if(ajax.status==200){
+                        console.log(ajax.responseText) //Chega como um JSON
+                        var resultado=JSON.parse(ajax.responseText);
+                        exibirDados(resultado)
+                    }
+                }
+            } 
+        }
+        function exibirDados(resultado){
+            divExibir.innerHTML=`
+                                <h3>${resultado.name} - ${resultado.sys.country}</h3>
+                                <b>Coordenadas</b><br>
+                                <b>Longitude:</b>${resultado.coord.lon} | <b>Latitude:</b>${resultado.coord.lat}
+                            `;
+
+            var lista = document.createElement('ul')                   
+            var itemLista= `
+                        <li><b>Hoje está:</b> ${resultado.weather[0].description}</li>
+                        <li><b>Tempetura:</b> ${resultado.main.temp} °C</li>
+                        <li><b>Mínima de:</b> ${resultado.main.temp_min} °C</li>
+                        <li><b>Mínima de:</b> ${resultado.main.temp_max} °C</li>
+                    `
+            lista.innerHTML = itemLista;
+            divExibir.appendChild(lista);
+
+        }
+    </script>
+</body>
+</html>

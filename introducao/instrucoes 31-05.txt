@@ -1,0 +1,5 @@
+venv\Scripts\activate ("Ativar a venv")
+python manage.py runserver ("rodar aplicação")
+py manage.py makemigrations ("Verificar migrações")
+py manage.py makemigrations ("Fazer migração")
+py manage.py createsuperuser ("criar um usuário pelo terminal")
